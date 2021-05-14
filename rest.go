@@ -1,13 +1,13 @@
 package bitbank
 
 import (
-	"bitbank-sdk/bitbank/model"
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"go-bitbank/model"
 	"io/ioutil"
 	"net/http"
 	"strconv"

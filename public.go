@@ -1,9 +1,9 @@
 package bitbank
 
 import (
-	"bitbank-sdk/bitbank/model"
 	"encoding/json"
 	"fmt"
+	"go-bitbank/model"
 	"net/http"
 )
 
