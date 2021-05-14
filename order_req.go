@@ -1,4 +1,4 @@
-package model
+package bitbank
 
 type OrderRequest struct {
 	Pair   string `json:"pair"`

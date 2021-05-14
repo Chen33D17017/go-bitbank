@@ -1,4 +1,4 @@
-package model
+package bitbank
 
 import (
 	"errors"

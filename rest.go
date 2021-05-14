@@ -11,8 +11,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-
-	"github.com/Chen33D17017/go-bitbank/model"
 )
 
 func readUTC(timestamp int64) string {
@@ -23,14 +21,14 @@ func makeTimestamp() int64 {
 	return time.Now().UnixNano() / int64(time.Millisecond)
 }
 
-func encode(s model.Secret, content string) string {
+func encode(s Secret, content string) string {
 	h := hmac.New(sha256.New, []byte(s.ApiSecret))
 	h.Write([]byte(content))
 	sha := hex.EncodeToString(h.Sum(nil))
 	return sha
 }
 
-func addHeader(req *http.Request, s model.Secret, content string) {
+func addHeader(req *http.Request, s Secret, content string) {
 	nonce := fmt.Sprint(makeTimestamp())
 	req.Header.Add("ACCESS-KEY", s.ApiKey)
 	req.Header.Add("ACCESS-NONCE", nonce)
@@ -58,7 +56,7 @@ func apiRequest(req *http.Request, response interface{}) error {
 	return nil
 }
 
-func getRequest(s model.Secret, query string, response interface{}) error {
+func getRequest(s Secret, query string, response interface{}) error {
 	url := fmt.Sprintf("https://api.bitbank.cc%s", query)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -73,7 +71,7 @@ func getRequest(s model.Secret, query string, response interface{}) error {
 	return nil
 }
 
-func postRequest(s model.Secret, endpoint string, payload []byte, response interface{}) error {
+func postRequest(s Secret, endpoint string, payload []byte, response interface{}) error {
 	url := fmt.Sprintf("https://api.bitbank.cc%s", endpoint)
 	payloadReader := bytes.NewReader(payload)
 	req, err := http.NewRequest("POST", url, payloadReader)
@@ -89,8 +87,8 @@ func postRequest(s model.Secret, endpoint string, payload []byte, response inter
 	return nil
 }
 
-func CheckAssets(s model.Secret) ([]model.Asset, error) {
-	var response model.AssetRst
+func CheckAssets(s Secret) ([]Asset, error) {
+	var response AssetRst
 	err := getRequest(s, "/v1/user/assets", &response)
 	if err != nil {
 		return response.Data.Assets, err
@@ -98,11 +96,11 @@ func CheckAssets(s model.Secret) ([]model.Asset, error) {
 	return response.Data.Assets, nil
 }
 
-func Trade(s model.Secret, assetType string, buy_sell string, amount float64) (model.Order, error) {
+func MakeTrade(s Secret, assetType string, buy_sell string, amount float64) (Order, error) {
 	url := fmt.Sprintf("/v1/user/spot/order")
-	var response model.OrderRst
+	var response OrderRst
 
-	order := model.OrderRequest{
+	order := OrderRequest{
 		Pair:   fmt.Sprintf("%s_jpy", assetType),
 		Amount: fmt.Sprintf("%.4f", amount),
 		Side:   buy_sell,
@@ -118,7 +116,7 @@ func Trade(s model.Secret, assetType string, buy_sell string, amount float64) (m
 	return response.Data, nil
 }
 
-func BuyWithJPY(s model.Secret, assetType string, JPY int64) (model.Order, error) {
+func BuyWithJPY(s Secret, assetType string, JPY int64) (Order, error) {
 	cryptmsg, err := GetPrice(assetType)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -126,15 +124,15 @@ func BuyWithJPY(s model.Secret, assetType string, JPY int64) (model.Order, error
 	cryptPrice, _ := strconv.Atoi(cryptmsg.Buy)
 	amount := float64(JPY) / float64(cryptPrice)
 
-	return Trade(s, assetType, "buy", amount)
+	return MakeTrade(s, assetType, "buy", amount)
 }
 
-func SellToJPY(s model.Secret, assetType string, amount float64) (model.Order, error) {
-	return Trade(s, assetType, "sell", amount)
+func SellToJPY(s Secret, assetType string, amount float64) (Order, error) {
+	return MakeTrade(s, assetType, "sell", amount)
 }
 
-func GetTradeHistory(s model.Secret, assetType string) ([]model.Trade, error) {
-	var response model.TradeRst
+func GetTradeHistory(s Secret, assetType string) ([]Trade, error) {
+	var response TradeRst
 	url := fmt.Sprintf("/v1/user/spot/trade_history?pair=%s_jpy", assetType)
 	err := getRequest(s, url, &response)
 	if err != nil {
@@ -143,8 +141,8 @@ func GetTradeHistory(s model.Secret, assetType string) ([]model.Trade, error) {
 	return response.Data.Trades, nil
 }
 
-func GetOrderInfo(s model.Secret, assetType, order_id string) (model.Order, error) {
-	var response model.OrderRst
+func GetOrderInfo(s Secret, assetType, order_id string) (Order, error) {
+	var response OrderRst
 	url := fmt.Sprintf("/v1/user/spot/order?pair=%s_jpy&order_id=%s", assetType, order_id)
 	err := getRequest(s, url, &response)
 	if err != nil {

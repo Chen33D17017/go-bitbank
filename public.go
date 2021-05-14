@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	"github.com/Chen33D17017/go-bitbank/model"
 )
 
-func GetPrice(cryp string) (model.Price, error) {
+func GetPrice(cryp string) (Price, error) {
 	// https://medium.com/@alain.drolet.0/how-to-unmarshal-an-array-of-json-objects-of-different-types-into-a-go-struct-10eab5f9a3a2
-	var rst model.PriceRst
+	var rst PriceRst
 	url := fmt.Sprintf("https://public.bitbank.cc/%s_jpy/ticker", cryp)
 	method := "GET"
 

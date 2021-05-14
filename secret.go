@@ -1,4 +1,4 @@
-package model
+package bitbank
 
 type Secret struct {
 	ApiKey    string `json:"key"`
