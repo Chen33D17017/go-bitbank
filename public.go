@@ -3,8 +3,9 @@ package bitbank
 import (
 	"encoding/json"
 	"fmt"
-	"go-bitbank/model"
 	"net/http"
+
+	"github.com/Chen33D17017/go-bitbank/model"
 )
 
 func GetPrice(cryp string) (model.Price, error) {

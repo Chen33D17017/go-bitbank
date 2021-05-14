@@ -7,11 +7,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"go-bitbank/model"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/Chen33D17017/go-bitbank/model"
 )
 
 func readUTC(timestamp int64) string {
